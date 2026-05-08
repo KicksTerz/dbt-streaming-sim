@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    database: STREAMIFY_RAW
+    schema: PUBLIC
+    tables:
+      - name: users
+      - name: streams
+      - name: events
+      - name: subscriptions

@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Cleaned users — one row per user"
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: plan_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['free', 'pro', 'enterprise']
+
+  - name: stg_streams
+    description: "Cleaned streams — one row per stream"
+    columns:
+      - name: stream_id
+        tests:
+          - unique
+          - not_null
+      - name: streamer_id
+        tests:
+          - not_null
+          - relationships:
+             arguments:
+               to: ref('stg_users')
+               field: user_id
+
+  - name: stg_events
+    description: "Cleaned events — one row per event"
+    columns:
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_subscriptions
+    description: "Cleaned subscriptions — one row per subscription"
+    columns:
+      - name: subscription_id
+        tests:
+          - unique
+          - not_null
