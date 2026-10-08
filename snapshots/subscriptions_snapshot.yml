@@ -1,0 +1,8 @@
+snapshots:
+  - name: subscriptions_snapshot
+    relation: source('raw', 'subscriptions')
+    description: "Change history of subscriptions. One row per version of each subscription; dbt_valid_to is null for the current version."
+    config:
+      unique_key: subscription_id
+      strategy: check
+      check_cols: ['plan_type', 'status', 'ended_at']
