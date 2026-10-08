@@ -84,3 +84,22 @@ models:
         description: "Of those, distinct users whose subscription status is currently active."
       - name: churned_subscribers
         description: "Of those, distinct users whose subscription status is currently churned."
+
+  - name: fct_events
+    description: "Viewer events fact table, built incrementally. One row per event."
+    columns:
+      - name: event_id
+        description: "Primary key of the event."
+        tests:
+          - unique
+          - not_null
+      - name: viewer_id
+        description: "The user who performed the event. Foreign key to dim_users.user_id."
+      - name: stream_id
+        description: "The stream the event happened on. Foreign key to fct_streams.stream_id."
+      - name: event_type
+        description: "Kind of interaction: view, like or follow."
+      - name: event_timestamp
+        description: "When the event happened. Used as the incremental watermark."
+      - name: event_date
+        description: "Calendar date of the event."
