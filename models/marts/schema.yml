@@ -2,25 +2,85 @@ version: 2
 
 models:
   - name: dim_users
-    description: "One row per user"
+    description: "User dimension. One row per user, with descriptive attributes and lifetime streaming activity. Join facts to it on user_id."
     columns:
       - name: user_id
+        description: "Primary key of the user."
         tests:
           - unique
           - not_null
+      - name: email
+        description: "User's email address, trimmed and lowercased."
+      - name: plan_type
+        description: "User's current plan: free, pro or enterprise."
+      - name: country_code
+        description: "Two-letter ISO country code of the user."
+      - name: created_at
+        description: "When the user registered."
+      - name: lifetime_streams
+        description: "Number of streams the user has broadcast. 0 for users who never streamed."
+      - name: first_stream_at
+        description: "Start time of the user's first stream. Null if they never streamed."
+      - name: most_recent_stream_at
+        description: "Start time of the user's latest stream. Null if they never streamed."
+      - name: is_paying
+        description: "True when the user's current plan is anything other than free."
 
   - name: fct_streams
+    description: "Streams fact table. One row per stream, with its timing, category and engagement measures. Get streamer attributes by joining dim_users on streamer_id = user_id."
     columns:
       - name: stream_id
+        description: "Primary key; one row per stream."
         tests:
           - unique
           - not_null
-
-
       - name: streamer_id
+        description: "The user who broadcast the stream. Foreign key to dim_users.user_id."
         tests:
           - not_null
           - relationships:
               arguments:
                 to: ref('dim_users')
                 field: user_id
+      - name: started_at
+        description: "When the stream started."
+      - name: ended_at
+        description: "When the stream ended."
+      - name: duration_minutes
+        description: "Whole minutes between started_at and ended_at."
+      - name: category
+        description: "Content category of the stream."
+      - name: total_events
+        description: "Number of viewer events of any type on the stream."
+      - name: unique_viewers
+        description: "Distinct users who viewed the stream."
+      - name: unique_likes
+        description: "Distinct users who liked the stream."
+
+  - name: mart_daily_active_viewers
+    description: "Daily audience activity. One row per calendar day that had at least one event."
+    columns:
+      - name: event_date
+        description: "The day, as a timestamp truncated to midnight."
+      - name: daily_active_viewers
+        description: "Distinct users with at least one event of any type that day."
+      - name: streams_watched
+        description: "Distinct streams with at least one event that day."
+      - name: total_views
+        description: "Number of view events that day (not distinct users)."
+      - name: total_likes
+        description: "Number of like events that day (not distinct users)."
+
+  - name: mart_revenue
+    description: "Paid subscription activity. One row per month and paid plan type, based on the month each subscription started. Free plans are excluded."
+    columns:
+      - name: month
+        description: "Month the subscriptions started, as a timestamp truncated to the first of the month."
+      - name: plan_type
+        description: "Paid plan: pro or enterprise."
+      - name: paying_subscribers
+        description: "Distinct users who started a paid subscription on this plan in this month."
+      - name: active_subscribers
+        description: "Of those, distinct users whose subscription status is currently active."
+      - name: churned_subscribers
+        description: "Of those, distinct users whose subscription status is currently churned."

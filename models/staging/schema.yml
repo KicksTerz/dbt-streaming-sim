@@ -2,45 +2,85 @@ version: 2
 
 models:
   - name: stg_users
-    description: "Cleaned users — one row per user"
+    description: "Cleaned users. One row per user. Emails are trimmed and lowercased; rows without a user_id are dropped."
     columns:
       - name: user_id
+        description: "Primary key of the user."
         tests:
           - unique
           - not_null
+      - name: email
+        description: "User's email address, trimmed and lowercased."
+      - name: created_at
+        description: "When the user registered."
       - name: plan_type
+        description: "User's current plan: free, pro or enterprise."
         tests:
           - accepted_values:
               arguments:
                 values: ['free', 'pro', 'enterprise']
+      - name: country_code
+        description: "Two-letter ISO country code of the user."
 
   - name: stg_streams
-    description: "Cleaned streams — one row per stream"
+    description: "Cleaned streams. One row per stream. Renames user_id to streamer_id and derives the stream's duration."
     columns:
       - name: stream_id
+        description: "Primary key of the stream."
         tests:
           - unique
           - not_null
       - name: streamer_id
+        description: "The user who broadcast the stream. Foreign key to stg_users.user_id."
         tests:
           - not_null
           - relationships:
-             arguments:
-               to: ref('stg_users')
-               field: user_id
+              arguments:
+                to: ref('stg_users')
+                field: user_id
+      - name: started_at
+        description: "When the stream started."
+      - name: ended_at
+        description: "When the stream ended."
+      - name: duration_minutes
+        description: "Whole minutes between started_at and ended_at."
+      - name: category
+        description: "Content category of the stream."
+      - name: title
+        description: "Title the streamer gave the stream."
 
   - name: stg_events
-    description: "Cleaned events — one row per event"
+    description: "Cleaned viewer events. One row per event."
     columns:
       - name: event_id
+        description: "Primary key of the event."
         tests:
           - unique
           - not_null
+      - name: user_id
+        description: "The viewer who performed the event."
+      - name: stream_id
+        description: "The stream the event happened on."
+      - name: event_type
+        description: "Kind of interaction, e.g. view or like."
+      - name: event_timestamp
+        description: "When the event happened."
 
   - name: stg_subscriptions
-    description: "Cleaned subscriptions — one row per subscription"
+    description: "Cleaned subscriptions. One row per subscription; a user can have several over time."
     columns:
       - name: subscription_id
+        description: "Primary key of the subscription."
         tests:
           - unique
           - not_null
+      - name: user_id
+        description: "The subscribing user."
+      - name: plan_type
+        description: "Plan of this subscription: free, pro or enterprise."
+      - name: started_at
+        description: "When the subscription started."
+      - name: ended_at
+        description: "When the subscription ended. Null if it hasn't ended."
+      - name: status
+        description: "Subscription status, e.g. active or churned."

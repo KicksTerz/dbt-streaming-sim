@@ -1,9 +1,7 @@
 -- USER DIMENSION. Grain: one row per user.
--- Kimball note: the starter fct_stream_sessions folded user attributes
--- (plan_type, country_code) INTO the fact. That's a denormalised "wide table"
--- style — fine for some BI, but the textbook star schema pulls descriptive
--- attributes into a dimension and keeps the fact narrow (keys + measures).
--- This dim is the "clean" version; fct_streams below references it by key.
+-- Kimball note: descriptive attributes (plan_type, country_code) live here,
+-- not in the fact. The textbook star schema keeps the fact narrow (keys +
+-- measures); fct_streams references this dim by key (streamer_id -> user_id).
 with users as (
     select * from {{ ref('stg_users') }}
 ),

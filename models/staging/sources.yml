@@ -2,10 +2,15 @@ version: 2
 
 sources:
   - name: raw
+    description: "Raw Streamify data, loaded as-is from the seed CSVs by `dbt seed`. Stands in for data a loading tool would land in a real warehouse."
     database: STREAMIFY_RAW
     schema: PUBLIC
     tables:
       - name: users
+        description: "One row per registered user, as received."
       - name: streams
+        description: "One row per live stream broadcast by a user."
       - name: events
+        description: "One row per viewer interaction (view, like, etc.) with a stream."
       - name: subscriptions
+        description: "One row per subscription a user has held, including ended ones."
