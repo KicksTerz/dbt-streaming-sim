@@ -11,9 +11,20 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
 models:
   streamify:
     staging:
       +materialized: view
+    intermediate:
+      +materialized: view
     marts:
       +materialized: table
+
+seeds:
+  streamify:
+    +database: STREAMIFY_RAW
+    +schema: PUBLIC

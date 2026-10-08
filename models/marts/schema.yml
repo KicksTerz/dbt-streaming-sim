@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: "One row per user"
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_streams
+    columns:
+      - name: stream_id
+        tests:
+          - unique
+          - not_null
+
+
+      - name: streamer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
