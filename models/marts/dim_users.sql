@@ -1,7 +1,4 @@
--- USER DIMENSION. Grain: one row per user.
--- Kimball note: descriptive attributes (plan_type, country_code) live here,
--- not in the fact. The textbook star schema keeps the fact narrow (keys +
--- measures); fct_streams references this dim by key (streamer_id -> user_id).
+-- One row per user. Holds user attributes so the fact tables only need user_id.
 with users as (
     select * from {{ ref('stg_users') }}
 ),

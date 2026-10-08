@@ -1,8 +1,4 @@
--- INTERMEDIATE layer (view): business logic lives here, keeping marts clean.
--- Materialized as a view (set for the whole folder in dbt_project.yml), so it
--- can be queried directly in Snowflake when debugging, at no storage cost.
---
--- Here: per-stream engagement counts, derived once and reused by the fact table.
+-- One row per stream, including streams with no events (counts are 0).
 with streams as (
     select * from {{ ref('stg_streams') }}
 ),

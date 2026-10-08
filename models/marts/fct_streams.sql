@@ -1,7 +1,4 @@
--- STREAMS FACT. Grain: ONE ROW PER STREAM (the atomic event we measure).
--- Narrow star-schema fact: foreign key to dim_users (streamer_id) + measures.
--- Descriptive attributes (plan_type, country) are NOT duplicated here — you get
--- them by joining dim_users. That's the dimensional-modelling discipline.
+-- One row per stream. Streamer attributes come from dim_users via streamer_id.
 with streams as (
     select * from {{ ref('stg_streams') }}
 ),
@@ -9,8 +6,8 @@ engagement as (
     select * from {{ ref('int_stream_engagement') }}
 )
 select
-    s.stream_id,                      -- primary key (grain)
-    s.streamer_id,                    -- FK -> dim_users.user_id
+    s.stream_id,
+    s.streamer_id,
     s.started_at,
     s.ended_at,
     s.duration_minutes,

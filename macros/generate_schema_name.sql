@@ -1,7 +1,6 @@
 {#
-  Override dbt's default schema naming so a model/seed with +schema: X
-  lands in exactly schema X (not target_schema_X). This lets our seeds go
-  into STREAMIFY_RAW.PUBLIC so sources.yml resolves cleanly.
+  Use a custom schema name as-is instead of dbt's default <target_schema>_<custom>,
+  so seeds land in STREAMIFY_RAW.PUBLIC, where sources.yml expects them.
 #}
 {% macro generate_schema_name(custom_schema_name, node) -%}
     {%- if custom_schema_name is none -%}

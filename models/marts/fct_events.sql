@@ -16,5 +16,7 @@ select
 from {{ ref('stg_events') }}
 
 {% if is_incremental() %}
+-- Reprocess the last 3 hours to catch late-arriving events; the unique_key
+-- merge keeps the overlap from creating duplicates.
 where event_timestamp > (select dateadd('hour', -3, max(event_timestamp)) from {{ this }})
 {% endif %}
